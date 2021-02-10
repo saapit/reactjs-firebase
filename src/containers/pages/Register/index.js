@@ -1,11 +1,13 @@
 import React, {Component} from 'react';
 import './Register.scss';
-import firebase from '../../../config/firebase';
+import Button from '../../../components/atoms/Button';
+import { connect } from 'react-redux';
+import { registerUserAPI } from '../../../config/redux/action';
 
 class Register extends Component{
     state ={
         email: '',
-        password: ''
+        password: '',
     }
     handleChangeText = (element) => {
         // console.log(element.target.id)
@@ -19,18 +21,10 @@ class Register extends Component{
         // console.log('password: ', this.state.password)
         const {email, password} = this.state;
         console.log('data before send: ', email, password)
+        this.props.registerAPI({email, password})
+        
+        
 
-        firebase.auth().createUserWithEmailAndPassword(email,password)
-        .then((userCredential) => {
-            // Signed in 
-            var user = userCredential.user;
-            console.log('success: ', user);
-        })
-        .catch((error) => {
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            console.log(errorCode, errorMessage)
-        });
     }
 
     render(){
@@ -40,7 +34,7 @@ class Register extends Component{
                 <p className="auth-title">Register Page</p>
                 <input className="input" id="email" placeholder="Email" type="text" onChange={this.handleChangeText}/>
                 <input className="input" id="password" placeholder="Password" type="password" onChange={this.handleChangeText}/>
-                <button className="btn" onClick={this.handleRegisterSubmit}>Register</button>
+                <Button onClick={this.handleRegisterSubmit} title="Register" loading={this.props.isLoading}/>
                 </div>
                 {/* <button>Go to Dashboard</button> */}
             </div>
@@ -48,4 +42,12 @@ class Register extends Component{
     }
 }
 
-export default Register;
+const reduxState = (state) => ({
+    isLoading: state.isLoading
+})
+
+const reduxDispatch = (dispatch) => ({
+    registerAPI: (data) => dispatch(registerUserAPI(data))
+})
+
+export default connect(reduxState, reduxDispatch) (Register);
