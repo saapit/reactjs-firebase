@@ -24,14 +24,14 @@ function App() {
           {/* A <Switch> looks through its children <Route>s and
               renders the first one that matches the current URL. */}
           <Switch>
-            <Route path="/login">
-              <Login />
+            <Route path="/login"  exact component={Login}>
+              {/* <Login /> */}
             </Route>
-            <Route path="/register">
-              <Register />
+            <Route path="/register" exact component={Register}>
+              {/* <Register /> */}
             </Route>
-            <Route path="/">
-              <Dashboard />
+            <Route path="/"  exact component={Dashboard}>
+              {/* <Dashboard /> */}
             </Route>
           </Switch>
         </div>
