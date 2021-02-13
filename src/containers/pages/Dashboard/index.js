@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import { connect } from 'react-redux';
 import './Dashboard.scss';
-import { addDatatoAPI } from '../../../config/redux/action';
+import { addDatatoAPI, getDataFromAPI } from '../../../config/redux/action';
 
 class Dashboard extends Component{
     state = {
@@ -9,15 +9,24 @@ class Dashboard extends Component{
         content: '',
         date: ''
     }
+
+    componentDidMount(){
+        const userData = JSON.parse(localStorage.getItem('userData'))
+        this.props.getNotes(userData.uid); // return {object}
+    }
+    
     handleSaveNotes = () => {
         // alert('Notes Created');
         const {title, content} = this.state;
         const {saveNotes} = this.props // {destructing} === this.props.saveNotes
+        const userData = JSON.parse(localStorage.getItem('userData'));
+
+
         const data = {
             title: title,
             content: content,
             date: new Date().getTime(),
-            userId: this.props.userData.uid
+            userId: userData.uid
         }
 
         saveNotes(data) //apply from {destructing}
@@ -33,6 +42,9 @@ class Dashboard extends Component{
 
     render(){
         const {title, content, date} = this.state;
+        const {notes} = this.props;
+        console.log('notes: ', notes);
+        console.log('check type notes: ', typeof(notes)); //check type
         return(
             <div className="container">
                 <div className="input-form">
@@ -43,22 +55,44 @@ class Dashboard extends Component{
                     <button className="save-btn" onClick={this.handleSaveNotes}>Save</button>
                 </div>
                 <hr/>
+               
                 <div className="card-content">
-                    <p className="title">Title</p>
-                    <p className="date">12 Feb 2021</p>
-                    <p className="content">Content Notes</p>
+                                            <p className="title">INI Default</p>
+                                            <p className="date">date</p>
+                                            <p className="content">content</p>
+                                        </div>
+                {
+                    //ternary operator
+                    1 > 0 ? (
+                        //  console.log('hi')
+                        <Fragment>
+                        {
+                                notes.map(note => {
+                                    return (
+                                        <div className="card-content" key={note.id} >
+                                            <p className="title">{note.data.title}</p>
+                                            <p className="date">{note.data.date}</p>
+                                            <p className="content">{note.data.content}</p>
+                                        </div>
+                                    )
+                                })
+                            }
+                        </Fragment>
+                    ) : console.log('fail', notes.length)
+                }
                 </div>
-            </div>
         )
     }
 }
 
 const reduxState = (state) => ({
-    userData: state.user
+    userData: state.user,
+    notes: state.notes
 })
 
 const reduxDispatch = (dispatch) => ({
-    saveNotes : (data) => dispatch(addDatatoAPI(data))
+    saveNotes : (data) => dispatch(addDatatoAPI(data)),
+    getNotes : (data) => dispatch(getDataFromAPI(data))
 })
 
 export default connect(reduxState, reduxDispatch) (Dashboard);

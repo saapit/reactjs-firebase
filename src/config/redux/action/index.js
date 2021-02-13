@@ -1,5 +1,6 @@
 import firebase, {database} from '../../firebase';
 
+
 export const actionUserName = () => (dispatch) => {
     setTimeout(() => {
         return dispatch({type: 'CHANGE_USER', value: 'Sapit Syther'})
@@ -68,4 +69,27 @@ export const addDatatoAPI = (data) => (dispatch) => {
         content: data.content,
         date: data.date
     })
+}
+
+export const getDataFromAPI = (userId) => (dispatch) => {
+    const urlNotes = database.ref('notes/' + userId);
+    return new Promise((resolve, reject) => {
+        urlNotes.on('value', (snapshot) => {
+            const data = snapshot.val();
+            // urlNotes(postElement, data);
+            console.log('Get Data: ', data);
+            const dataArr = [];
+            // change object to array
+            Object.keys(data).map( key => {
+                dataArr.push({
+                    id: key,
+                    data: data[key]
+                })
+            }); 
+
+            dispatch({type: 'SET_NOTES', value: dataArr})
+            resolve(data);
+        });
+    })
+
 }
