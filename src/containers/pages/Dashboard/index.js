@@ -1,7 +1,7 @@
 import React, {Component, Fragment} from 'react';
 import { connect } from 'react-redux';
 import './Dashboard.scss';
-import { addDatatoAPI, getDataFromAPI, updateDataAPI } from '../../../config/redux/action';
+import { addDatatoAPI, getDataFromAPI, updateDataAPI, deleteDataAPI } from '../../../config/redux/action';
 
 class Dashboard extends Component{
     state = {
@@ -9,7 +9,7 @@ class Dashboard extends Component{
         content: '',
         date: '',
         textButton: 'SAVE',
-        noteID: ''
+        noteId: ''
     }
 
     componentDidMount(){
@@ -33,12 +33,11 @@ class Dashboard extends Component{
 
         if(textButton === 'SAVE'){
             saveNotes(data)
-        } else {
+        } else { //kalau textButton === 'UPDATE
             data.noteId = noteId;
             updateNotes(data)
         }
 
-        saveNotes(data) //apply from {destructing}
         console.log(data);
     }
 
@@ -66,11 +65,23 @@ class Dashboard extends Component{
         })
     }
 
+    deleteNote = (e, note) => {
+        e.stopPropagation(); // hanya child akan aktiv, parent tak (stop-click)
+        const {deleteNote} = this.props;
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        const data = {
+            userId: userData.uid,
+            noteId: note.id,
+        }
+        // alert('You want to delete this note?');
+        deleteNote(data);
+    }
+ 
 
     render(){
         const {title, content, textButton} = this.state;
         const {notes} = this.props;
-        const {updateNotes, cancelUpdate} = this;
+        const {updateNotes, cancelUpdate, deleteNote} = this;
         console.log('notes: ', notes);
         console.log('check type notes: ', typeof(notes)); //check type
         return(
@@ -102,6 +113,7 @@ class Dashboard extends Component{
                                             <p className="title">{note.data.title}</p>
                                             <p className="date">{note.data.date}</p>
                                             <p className="content">{note.data.content}</p>
+                                            <div className="delete-btn" onClick={(e) => { if (window.confirm('Are you sure want to delete this?')) deleteNote(e, note)}}>X</div>
                                         </div>
                                     )
                                 })
@@ -123,6 +135,7 @@ const reduxDispatch = (dispatch) => ({
     saveNotes : (data) => dispatch(addDatatoAPI(data)),
     getNotes : (data) => dispatch(getDataFromAPI(data)),
     updateNotes : (data) => dispatch(updateDataAPI(data)),
+    deleteNote : (data) => dispatch(deleteDataAPI(data)),
 })
 
 export default connect(reduxState, reduxDispatch) (Dashboard);
