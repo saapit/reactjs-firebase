@@ -43,14 +43,29 @@
             font-weight: bold;
             text-transform: uppercase;
             outline: none;
+            &.cancel {
+                border: 2px solid orange;
+                color: orange;
+            }
+        }
+        .action-wrapper {
+            display: flex;
+            justify-content: space-between;
+            width: 40%;
         }
     }
     .card-content{
         border: 1px solid rgba(0, 0, 0, 0.1);
         border-radius: 4px;
         padding: 16px;
-        box-shadow: 4px 3px 9px rgba(0, 0,0, 0.1);
+        box-shadow: 4px 3px 9px rgba(0, 0, 0, 0.1);
         margin-bottom: 16px;
+        transition: all ease 0.35s;
+        &:hover{
+            cursor: pointer;
+            transform: translateY(-3px);
+            background: rgba(0, 0, 0, 0.1)
+        }
         p {
             margin: 0px;
         }
